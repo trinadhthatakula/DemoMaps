@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Looper
+import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -24,6 +25,10 @@ import com.google.maps.android.ktx.addMarker
 import com.google.maps.android.ktx.awaitMap
 import com.google.maps.android.ktx.mapClickEvents
 import com.spectra.demo.maps.saver.databinding.ActivityMainBinding
+import com.spectra.demo.maps.saver.model.CardPainter
+import com.spectra.demo.maps.saver.model.CustomPainter
+import com.spectra.demo.maps.saver.model.supporter
+import com.spectra.demo.maps.saver.model.utils.resToPx
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -56,18 +61,25 @@ class MainActivity : AppCompatActivity() {
                 if (locations.isNotEmpty()) {
                     locations[0]?.let { location ->
                         currentLocation = LatLng(location.latitude, location.longitude)
-                        if (shouldLocate)
-                            gMap?.animateCamera(
-                                CameraUpdateFactory.newLatLngZoom(
-                                    currentLocation,
-                                    mapZoom
-                                )
-                            )
+                        if (shouldLocate) {
+                            animateMapTo(currentLocation)
+                            shouldLocate = false
+                        }
                     }
                 }
             }
         }
     }
+
+    private fun animateMapTo(latLng: LatLng = currentLocation) {
+        gMap?.animateCamera(
+            CameraUpdateFactory.newLatLngZoom(
+                latLng,
+                mapZoom
+            )
+        )
+    }
+
     private val clickedPoints = ArrayList<LatLng>()
     private val mapMarkers = ArrayList<Marker>()
 
@@ -83,6 +95,7 @@ class MainActivity : AppCompatActivity() {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
                 mapFragment.awaitMap().let { map ->
                     gMap = map
+                    startLocationUpdates()
                     map.mapClickEvents().collect { clickedLatLng ->
                         map.addMarker {
                             position(clickedLatLng)
@@ -93,21 +106,32 @@ class MainActivity : AppCompatActivity() {
                                 handleMarkers()
                             }
                         }
-
                     }
+
                 }
             }
-            repeatOnLifecycle(Lifecycle.State.RESUMED){
-                if(gMap!=null){
+            repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                if (gMap != null) {
                     startLocationUpdates()
                 }
             }
         }
 
+        setUpCurvedState()
+
+        binding.zoomIn.setOnClickListener {
+            mapZoom += 1
+            animateMapTo(gMap?.cameraPosition?.target?:currentLocation)
+        }
+        binding.zoomOut.setOnClickListener {
+            mapZoom -= 1
+            animateMapTo(gMap?.cameraPosition?.target?:currentLocation)
+        }
+
     }
 
     override fun onPause() {
-        if(gMap!=null)
+        if (gMap != null)
             fusedLocationProviderClient.removeLocationUpdates(locationCallback)
         super.onPause()
     }
@@ -120,15 +144,15 @@ class MainActivity : AppCompatActivity() {
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+            ) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             permLauncher.launch(
                 arrayOf(
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
                     Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
                 )
             )
         } else {
@@ -143,5 +167,26 @@ class MainActivity : AppCompatActivity() {
             )
         }
     }
+
+
+    private fun setUpCurvedState() {
+        val cardHeight = R.dimen.profile_card_height.resToPx(this).toInt()
+        val avatarMargin = R.dimen.avatar_margin.resToPx(this)
+        binding.canvasFrame.addView(
+            CustomPainter(
+                context = this,
+                width = ViewGroup.LayoutParams.MATCH_PARENT,
+                height = cardHeight,
+                painter = CardPainter(
+                    color = supporter.getColor(
+                        com.google.android.material.R.attr.colorPrimary,
+                        this
+                    ),
+                    avatarMargin = avatarMargin
+                )
+            )
+        )
+    }
+
 
 }

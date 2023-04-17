@@ -16,8 +16,10 @@ maps-utils = "2.3.0"
 lifecycle-runtime-ktx = "2.6.1"
 coroutine-android = "1.6.4"
 kotlinx-serialization-json = "1.5.0"
+multi-dex = "2.0.1"
 
 [libraries]
+multi-dex = { group = "androidx.multidex", name = "multidex", version.ref = "multi-dex" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
