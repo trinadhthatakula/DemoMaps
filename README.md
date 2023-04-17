@@ -1,5 +1,5 @@
 # DemoMaps
-A Smaple Google Maps Project useful for beginners, I will ty to keep it up to date.
+A Sample Google Maps Project useful for beginners, I will ty to keep it up to date.
 
 Google Maps version 18.1.0
 Maps Ktx version 3.4.0
