@@ -3,7 +3,8 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="seed_green">#4E7F16</color>
-    <color name="seed_green_faded">#334E7F16</color>
+    <color name="seed_green_faded">#4D4E7F16</color>
+    <color name="seed_green_faded_max">#BF4E7F16</color>
     <color name="md_theme_green_light_primary">#3C6A00</color>
     <color name="md_theme_green_light_onPrimary">#FFFFFF</color>
     <color name="md_theme_green_light_primaryContainer">#BAF37E</color>

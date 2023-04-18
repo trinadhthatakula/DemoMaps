@@ -8,12 +8,12 @@
     tools:context=".SnapPreviewActivity">
 
     <com.google.android.material.card.MaterialCardView
-        style="@style/Widget.Material3.CardView.Elevated"
+        style="@style/Widget.Material3.CardView.Filled"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_margin="8dp"
-        app:cardElevation="6dp"
         app:cardCornerRadius="20dp"
+        app:cardElevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -24,9 +24,166 @@
         <com.github.chrisbanes.photoview.PhotoView
             android:id="@+id/snap_iv"
             android:layout_width="wrap_content"
-            android:scaleType="centerCrop"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:scaleType="centerCrop" />
 
     </com.google.android.material.card.MaterialCardView>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5"
+        android:id="@+id/guide_half"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="#B3ECFFEF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/guide_half">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/guide_half">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Add More Details"
+                android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+                android:textColor="?attr/colorPrimary" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/ThemeOverlay.Material3.TextInputEditText.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:hint="Title"
+                android:textColorHint="?attr/colorPrimary"
+                app:boxStrokeColor="@color/text_box_white"
+                app:helperText="Give a title to the location"
+                app:helperTextTextColor="?attr/colorPrimary"
+                app:hintTextColor="?attr/colorPrimary">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/title_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorPrimary"
+                    android:textCursorDrawable="@drawable/white_cursor" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/ThemeOverlay.Material3.TextInputEditText.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:hint="Description(Optional)"
+                android:textColorHint="?attr/colorPrimary"
+                app:boxStrokeColor="@color/text_box_white"
+                app:helperText="Enter any Description to the Locaiton"
+                app:helperTextTextColor="?attr/colorPrimary"
+                app:hintTextColor="?attr/colorPrimary">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/Description_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorPrimary"
+                    android:textCursorDrawable="@drawable/white_cursor" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:layout_marginTop="20dp"
+                android:text="Select Icon"
+                android:drawableStart="@drawable/vect_pick_marker"
+                android:drawablePadding="10dp"
+                android:drawableTint="?attr/colorPrimary"
+                android:textColor="?attr/colorPrimary"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/marker_6"
+                    android:layout_width="30dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:padding="10dp"
+                    android:src="@drawable/marker_6" />
+
+                <ImageView
+                    android:id="@+id/marker_1"
+                    android:layout_width="30dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:padding="10dp"
+                    android:src="@drawable/marker_1" />
+
+                <ImageView
+                    android:id="@+id/marker_2"
+                    android:layout_width="30dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:padding="10dp"
+                    android:src="@drawable/marker_2" />
+
+                <ImageView
+                    android:id="@+id/marker_3"
+                    android:layout_width="30dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:padding="10dp"
+                    android:src="@drawable/marker_3" />
+
+                <ImageView
+                    android:id="@+id/marker_4"
+                    android:layout_width="30dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:padding="10dp"
+                    android:src="@drawable/marker_4" />
+
+
+                <ImageView
+                    android:id="@+id/marker_5"
+                    android:layout_width="30dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:padding="10dp"
+                    android:src="@drawable/marker_5" />
+
+                <ImageView
+                    android:id="@+id/marker_7"
+                    android:layout_width="30dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:padding="10dp"
+                    android:src="@drawable/marker_7" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+    </ScrollView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
