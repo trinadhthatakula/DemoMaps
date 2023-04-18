@@ -1,6 +1,7 @@
 package com.spectra.demo.maps.saver
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Looper
@@ -21,12 +22,18 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.Polygon
+import com.google.android.gms.maps.model.Polyline
 import com.google.maps.android.ktx.addMarker
+import com.google.maps.android.ktx.addPolygon
+import com.google.maps.android.ktx.addPolyline
 import com.google.maps.android.ktx.awaitMap
 import com.google.maps.android.ktx.mapClickEvents
 import com.spectra.demo.maps.saver.databinding.ActivityMainBinding
 import com.spectra.demo.maps.saver.model.CardPainter
 import com.spectra.demo.maps.saver.model.CustomPainter
+import com.spectra.demo.maps.saver.model.PolyMode.GON
+import com.spectra.demo.maps.saver.model.PolyMode.LINE
 import com.spectra.demo.maps.saver.model.supporter
 import com.spectra.demo.maps.saver.model.utils.resToPx
 import kotlinx.coroutines.launch
@@ -49,6 +56,7 @@ class MainActivity : AppCompatActivity() {
             startLocationUpdates()
         }
     }
+    private var polyMode = GON
     private var shouldLocate = true
     private var mapZoom = 15f
     private var gMap: GoogleMap? = null
@@ -121,11 +129,32 @@ class MainActivity : AppCompatActivity() {
 
         binding.zoomIn.setOnClickListener {
             mapZoom += 1
-            animateMapTo(gMap?.cameraPosition?.target?:currentLocation)
+            animateMapTo(gMap?.cameraPosition?.target ?: currentLocation)
         }
         binding.zoomOut.setOnClickListener {
             mapZoom -= 1
-            animateMapTo(gMap?.cameraPosition?.target?:currentLocation)
+            animateMapTo(gMap?.cameraPosition?.target ?: currentLocation)
+        }
+
+        binding.areaFab.setOnClickListener {
+            polyMode = GON
+            handleMarkers()
+        }
+        binding.distanceFab.setOnClickListener {
+            polyMode = LINE
+            handleMarkers()
+        }
+
+        binding.areaFab.hide()
+        binding.distanceFab.hide()
+
+        binding.saveMap.setOnClickListener {
+            gMap?.snapshot {
+                it?.let { mapSnap ->
+                    supporter.mapSnap = (mapSnap)
+                    startActivity(Intent(this, SnapPreviewActivity::class.java))
+                }
+            }
         }
 
     }
@@ -136,7 +165,48 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
     }
 
+    private var polyLine: Polyline? = null
+    private var polyGon: Polygon? = null
+
     private fun handleMarkers() {
+
+        val primaryColor = supporter.getColor(
+            com.google.android.material.R.attr.colorPrimary,
+            this@MainActivity
+        )
+
+        if (clickedPoints.size > 1)
+            binding.distanceFab.show()
+        if (clickedPoints.size > 2)
+            binding.areaFab.show()
+        when (polyMode) {
+            GON -> {
+                polyGon?.remove()
+                polyLine?.remove()
+                polyGon = null
+                polyLine = null
+                if (clickedPoints.size > 1) {
+                    gMap?.addPolygon {
+                        addAll(clickedPoints)
+                        strokeColor(primaryColor)
+                        fillColor(getColor(R.color.seed_green_faded))
+                    }?.let { polyGon = it }
+                }
+            }
+
+            LINE -> {
+                polyGon?.remove()
+                polyLine?.remove()
+                polyGon = null
+                polyLine = null
+                if (clickedPoints.size > 1) {
+                    gMap?.addPolyline {
+                        addAll(clickedPoints)
+                        color(primaryColor)
+                    }?.let { polyLine = it }
+                }
+            }
+        }
 
     }
 

@@ -17,6 +17,7 @@ lifecycle-runtime-ktx = "2.6.1"
 coroutine-android = "1.6.4"
 kotlinx-serialization-json = "1.5.0"
 multi-dex = "2.0.1"
+photo-view = "2.3.0"
 
 [libraries]
 multi-dex = { group = "androidx.multidex", name = "multidex", version.ref = "multi-dex" }
@@ -39,6 +40,7 @@ lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-view
 coroutine-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutine-android" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "org-jetbrains-kotlin-android" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
+photo-view = { group = "com.github.chrisbanes", name = "PhotoView", version.ref = "photo-view" }
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "com-android-application" }

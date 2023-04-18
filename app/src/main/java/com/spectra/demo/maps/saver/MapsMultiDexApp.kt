@@ -7,7 +7,7 @@ class MapsMultiDexApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        DynamicColors.applyToActivitiesIfAvailable(this)
+        //DynamicColors.applyToActivitiesIfAvailable(this)
     }
 
 }

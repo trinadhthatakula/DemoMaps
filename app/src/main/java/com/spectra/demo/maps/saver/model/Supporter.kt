@@ -2,11 +2,14 @@ package com.spectra.demo.maps.saver.model
 
 import android.content.Context
 import android.content.res.TypedArray
+import android.graphics.Bitmap
 import android.util.TypedValue
 
 val supporter = Supporter.getInstance()
 
 class Supporter {
+
+    var mapSnap: Bitmap? = null
 
     companion object {
 
