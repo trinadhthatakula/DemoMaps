@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Demo Maps Saver"
 include ':app'
+//MAPS_API_KEY=AIzaSyBI00wYYlsM5_zU6fjMZAbs_lTeAtURV5o
