@@ -1,7 +1,9 @@
 plugins {
     alias(libs.plugins.com.android.application)
     alias(libs.plugins.org.jetbrains.kotlin.android)
+    alias(libs.plugins.org.jetbrains.kotlin.plugin.serialization)
     alias(libs.plugins.maps.plugin)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -25,6 +27,12 @@ android {
     buildFeatures {
         buildConfig = true
         viewBinding true
+    }
+
+    applicationVariants.configureEach { variant ->
+        variant.sourceSets.java.each {
+            it.srcDirs += "build/generated/ksp/${variant.name}/kotlin"
+        }
     }
 
     buildTypes {
@@ -53,11 +61,20 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlin.stdlib)
 
+    implementation(libs.koin.android)
+    implementation(libs.koin.android.compose)
+    implementation(libs.koin.annotations)
+    ksp(libs.koin.ksp.compiler)
+
     implementation libs.multi.dex
     implementation libs.core.ktx
     implementation libs.appcompat
     implementation libs.material
     implementation libs.constraintlayout
+
+    implementation libs.room.db
+    implementation libs.room.ktx
+    ksp libs.room.compiler
 
     implementation libs.play.services.maps
     implementation libs.play.services.location

@@ -1,6 +1,7 @@
 [versions]
 com-android-application = "8.1.0-alpha11"
 org-jetbrains-kotlin-android = "1.8.20"
+ksp-version = "1.8.20-1.0.11"
 maps-plugin = "2.0.1"
 core-ktx = "1.10.0"
 junit = "4.13.2"
@@ -18,6 +19,11 @@ coroutine-android = "1.6.4"
 kotlinx-serialization-json = "1.5.0"
 multi-dex = "2.0.1"
 photo-view = "2.3.0"
+room-db = "2.5.1"
+koin-android = "3.4.0"
+koin-android-compose = "3.4.3"
+koin-annotations = "1.2.0"
+koin-ksp-compiler = "1.2.0"
 
 [libraries]
 multi-dex = { group = "androidx.multidex", name = "multidex", version.ref = "multi-dex" }
@@ -41,10 +47,19 @@ coroutine-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutine
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "org-jetbrains-kotlin-android" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 photo-view = { group = "com.github.chrisbanes", name = "PhotoView", version.ref = "photo-view" }
+room-db = { group = "androidx.room", name = "room-runtime", version.ref = "room-db" }
+room-compiler = {group = "androidx.room", name = "room-compiler", version.ref = "room-db"}
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room_db"}
+koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin-android" }
+koin-android-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin-android-compose" }
+koin-annotations = { group = "io.insert-koin", name = "koin-annotations", version.ref = "koin-annotations" }
+koin-ksp-compiler = { group = "io.insert-koin", name = "koin-ksp-compiler", version.ref = "koin-ksp-compiler" }
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "com-android-application" }
 org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "org-jetbrains-kotlin-android" }
+org-jetbrains-kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "org-jetbrains-kotlin-android" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp-version" }
 maps-plugin = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "maps-plugin" }
 
 [bundles]

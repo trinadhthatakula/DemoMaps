@@ -21,6 +21,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.Polygon
 import com.google.android.gms.maps.model.Polyline
@@ -32,13 +33,18 @@ import com.google.maps.android.ktx.mapClickEvents
 import com.spectra.demo.maps.saver.databinding.ActivityMainBinding
 import com.spectra.demo.maps.saver.model.CardPainter
 import com.spectra.demo.maps.saver.model.CustomPainter
+import com.spectra.demo.maps.saver.model.Point
+import com.spectra.demo.maps.saver.model.PolyData
 import com.spectra.demo.maps.saver.model.PolyMode.GON
 import com.spectra.demo.maps.saver.model.PolyMode.LINE
-import com.spectra.demo.maps.saver.model.supporter
+import com.spectra.demo.maps.saver.model.Supporter
 import com.spectra.demo.maps.saver.model.utils.resToPx
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity() {
+
+    private val supporter: Supporter by inject()
 
     private val binding by lazy(LazyThreadSafetyMode.NONE) {
         ActivityMainBinding.inflate(layoutInflater)
@@ -56,7 +62,6 @@ class MainActivity : AppCompatActivity() {
             startLocationUpdates()
         }
     }
-    private var polyMode = GON
     private var shouldLocate = true
     private var mapZoom = 15f
     private var gMap: GoogleMap? = null
@@ -88,7 +93,6 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    private val clickedPoints = ArrayList<LatLng>()
     private val mapMarkers = ArrayList<Marker>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -103,14 +107,15 @@ class MainActivity : AppCompatActivity() {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
                 mapFragment.awaitMap().let { map ->
                     gMap = map
+                    //map.setMapStyle(MapStyleOptions.loadRawResourceStyle(this@MainActivity,R.raw.night_maps))
                     startLocationUpdates()
                     map.mapClickEvents().collect { clickedLatLng ->
                         map.addMarker {
                             position(clickedLatLng)
-                            clickedPoints.add(clickedLatLng)
+                            supporter.markedPoints.add(clickedLatLng)
                         }?.let {
                             mapMarkers.add(it)
-                            if (clickedPoints.size > 1) {
+                            if (supporter.markedPoints.size > 1) {
                                 handleMarkers()
                             }
                         }
@@ -137,11 +142,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.areaFab.setOnClickListener {
-            polyMode = GON
+            supporter.polyMode = GON
             handleMarkers()
         }
         binding.distanceFab.setOnClickListener {
-            polyMode = LINE
+            supporter.polyMode = LINE
             handleMarkers()
         }
 
@@ -175,19 +180,19 @@ class MainActivity : AppCompatActivity() {
             this@MainActivity
         )
 
-        if (clickedPoints.size > 1)
+        if (supporter.markedPoints.size > 1)
             binding.distanceFab.show()
-        if (clickedPoints.size > 2)
+        if (supporter.markedPoints.size > 2)
             binding.areaFab.show()
-        when (polyMode) {
+        when (supporter.polyMode) {
             GON -> {
                 polyGon?.remove()
                 polyLine?.remove()
                 polyGon = null
                 polyLine = null
-                if (clickedPoints.size > 1) {
+                if (supporter.markedPoints.size > 1) {
                     gMap?.addPolygon {
-                        addAll(clickedPoints)
+                        addAll(supporter.markedPoints)
                         strokeColor(primaryColor)
                         fillColor(getColor(R.color.seed_green_faded))
                     }?.let { polyGon = it }
@@ -199,9 +204,9 @@ class MainActivity : AppCompatActivity() {
                 polyLine?.remove()
                 polyGon = null
                 polyLine = null
-                if (clickedPoints.size > 1) {
+                if (supporter.markedPoints.size > 1) {
                     gMap?.addPolyline {
-                        addAll(clickedPoints)
+                        addAll(supporter.markedPoints)
                         color(primaryColor)
                     }?.let { polyLine = it }
                 }

@@ -37,6 +37,7 @@
         android:id="@+id/guide_half"/>
 
     <ScrollView
+        android:id="@+id/edit_slab"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="#B3ECFFEF"
@@ -181,6 +182,12 @@
 
             </LinearLayout>
 
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="150dp"
+                android:layout_margin="5dp"
+                android:id="@+id/save_btn"
+                android:layout_height="wrap_content"
+                android:text="Save Details"/>
 
         </LinearLayout>
     </ScrollView>
