@@ -14,7 +14,7 @@ interface SavedMapsDao {
     fun getAllSavedMaps(): Flow<List<MapData>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(mapData: MapData)
+    suspend fun insert(mapData: MapData)
 
     @Query("DELETE FROM SavedMaps")
     suspend fun deleteAll()

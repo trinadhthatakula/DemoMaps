@@ -22,7 +22,7 @@ class SnapPreviewActivity : AppCompatActivity() {
     }
     private val supporter: Supporter by inject()
     private val viewModel: SavedMapsViewModel by viewModel()
-    var iconSelected: Int = 0
+    private var iconSelected: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,14 +54,16 @@ class SnapPreviewActivity : AppCompatActivity() {
                     polyData = supporter.polyData.getAsString()
                 )
                 viewModel.insert(mapData) {
-                    Toast.makeText(this, "Added to Database", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@SnapPreviewActivity,
+                        "Added to Database",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     binding.editSlab.isVisible = false
-                    startActivity(Intent(this,ResultActivity::class.java))
+                    startActivity(Intent(this@SnapPreviewActivity, ResultActivity::class.java))
                 }
             }
         }
-
-
     }
 
 }

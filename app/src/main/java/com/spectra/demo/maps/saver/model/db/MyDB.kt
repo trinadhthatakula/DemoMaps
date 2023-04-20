@@ -21,7 +21,11 @@ abstract class MyDB : RoomDatabase() {
 class DBModule{
 
     @Single
-    fun getDB(context: Context): MyDB = Room.databaseBuilder(context, MyDB::class.java,"SavedMaps.DB").build()
+    fun getDB(context: Context): MyDB = Room.databaseBuilder(
+        context,
+        MyDB::class.java,
+        "SavedMaps.DB"
+    ).build()
 
     @Factory
     fun savedMapsDAO(db: MyDB): SavedMapsDao = db.savedMapsDao()
