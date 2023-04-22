@@ -61,7 +61,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlin.stdlib)
 
-    implementation(libs.koin.android)
+    implementation(libs.koin.androidx)
     implementation(libs.koin.android.compose)
     implementation(libs.koin.annotations)
     ksp(libs.koin.ksp.compiler)

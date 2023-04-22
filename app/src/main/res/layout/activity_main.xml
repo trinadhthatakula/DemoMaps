@@ -31,11 +31,10 @@
         android:id="@+id/linearLayout"
         android:layout_width="200dp"
         android:layout_height="@dimen/profile_card_height"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="16dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="@id/map_fragment"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent">
 
         <ImageView
@@ -116,6 +115,57 @@
         android:layout_marginTop="4dp"
         app:layout_constraintTop_toBottomOf="@+id/guide_half"
         app:layout_constraintStart_toStartOf="parent"
+        app:tint="?attr/colorOnPrimary" />
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/undo_fab"
+        style="@style/Widget.MaterialComponents.FloatingActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/save_map_data"
+        android:src="@drawable/undo"
+        app:backgroundTint="?attr/colorPrimary"
+        app:elevation="0dp"
+        app:fabCustomSize="36dp"
+        app:fabSize="mini"
+        app:layout_constraintBottom_toBottomOf="@+id/canvas_frame"
+        app:layout_constraintEnd_toStartOf="@id/redo_fab"
+        app:layout_constraintTop_toTopOf="@+id/canvas_frame"
+        app:tint="?attr/colorOnPrimary" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/redo_fab"
+        style="@style/Widget.MaterialComponents.FloatingActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:contentDescription="@string/save_map_data"
+        android:src="@drawable/redo"
+        app:backgroundTint="?attr/colorPrimary"
+        app:elevation="0dp"
+        app:fabCustomSize="36dp"
+        app:fabSize="mini"
+        app:layout_constraintBottom_toBottomOf="@+id/canvas_frame"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/canvas_frame"
+        app:tint="?attr/colorOnPrimary" />
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/clear_fab"
+        style="@style/Widget.MaterialComponents.FloatingActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/save_map_data"
+        android:src="@drawable/clear_all"
+        app:backgroundTint="?attr/colorPrimary"
+        app:elevation="0dp"
+        app:fabCustomSize="36dp"
+        app:fabSize="mini"
+        app:layout_constraintBottom_toBottomOf="@+id/canvas_frame"
+        app:layout_constraintEnd_toStartOf="@id/undo_fab"
+        app:layout_constraintTop_toTopOf="@+id/canvas_frame"
         app:tint="?attr/colorOnPrimary" />
 
 

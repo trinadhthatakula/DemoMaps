@@ -6,9 +6,15 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <uses-feature android:name="android.hardware.location" android:required="false"/>
-    <uses-feature android:name="android.hardware.location.network" android:required="false"/>
-    <uses-feature android:name="android.hardware.location.gps" android:required="false"/>
+    <uses-feature
+        android:name="android.hardware.location"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.location.network"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.location.gps"
+        android:required="false" />
 
     <application
         android:name=".MapsApplication"
@@ -22,39 +28,47 @@
         android:supportsRtl="true"
         android:theme="@style/AppThemeGreen"
         tools:targetApi="tiramisu">
-
+        <activity
+            android:name=".SplashActivity"
+            android:exported="false" />
         <activity
             android:name=".OpenerActivity"
             android:exported="true">
-
             <intent-filter android:autoVerify="true">
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:mimeType="text/gloc" android:scheme="content" android:host="*"/>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="*"
+                    android:mimeType="text/gloc"
+                    android:scheme="content" />
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:mimeType="application/*" android:scheme="content" android:host="*"/>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="*"
+                    android:mimeType="application/*"
+                    android:scheme="content" />
             </intent-filter>
-
         </activity>
-
         <activity
             android:name=".ResultActivity"
             android:exported="false" />
-
         <activity
             android:name=".SnapPreviewActivity"
             android:exported="false" />
-
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

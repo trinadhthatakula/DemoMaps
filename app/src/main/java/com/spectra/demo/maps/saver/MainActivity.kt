@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Looper
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -43,6 +44,7 @@ import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity() {
 
+    private val redoList: ArrayList<LatLng> = ArrayList()
     private val supporter: Supporter by inject()
 
     private val binding by lazy(LazyThreadSafetyMode.NONE) {
@@ -102,6 +104,12 @@ class MainActivity : AppCompatActivity() {
         permLauncher
         val mapFragment =
             supportFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment
+
+        binding.undoFab.hide()
+        binding.clearFab.hide()
+        binding.areaFab.hide()
+        binding.distanceFab.hide()
+        binding.redoFab.hide()
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
@@ -171,9 +179,6 @@ class MainActivity : AppCompatActivity() {
             handleMarkers()
         }
 
-        binding.areaFab.hide()
-        binding.distanceFab.hide()
-
         binding.saveMap.setOnClickListener {
             gMap?.snapshot {
                 it?.let { mapSnap ->
@@ -181,6 +186,64 @@ class MainActivity : AppCompatActivity() {
                     startActivity(Intent(this, SnapPreviewActivity::class.java))
                 }
             }
+        }
+
+        binding.clearFab.setOnClickListener {
+            redoList.clear()
+            mapMarkers.clear()
+            supporter.markedPoints.clear()
+            polyLine?.remove()
+            polyGon?.remove()
+            gMap?.clear()
+            animateMapTo(currentLocation)
+            binding.undoFab.hide()
+            binding.clearFab.hide()
+            binding.areaFab.hide()
+            binding.redoFab.hide()
+            binding.distanceFab.hide()
+        }
+
+        binding.undoFab.setOnClickListener {
+            mapMarkers.removeLast().remove()
+            val lastLatLng = supporter.markedPoints.removeLast()
+            redoList.add(lastLatLng)
+
+            if(mapMarkers.isEmpty()) {
+                binding.undoFab.hide()
+                binding.redoFab.hide()
+                binding.clearFab.hide()
+                binding.areaFab.hide()
+                binding.distanceFab.hide()
+            }
+            if(mapMarkers.size==1) {
+                binding.areaFab.hide()
+                binding.undoFab.hide()
+                binding.redoFab.hide()
+            }
+            handleMarkers()
+
+            if(redoList.isNotEmpty()) {
+                binding.redoFab.show()
+            }
+
+        }
+
+        binding.redoFab.setOnClickListener {
+            if (redoList.isNotEmpty()){
+                redoList.removeLast().let { lastLatLng ->
+                    gMap?.addMarker {
+                        position(lastLatLng)
+                        supporter.markedPoints.add(lastLatLng)
+                    }?.let {
+                        it.tag = mapMarkers.size
+                        it.isDraggable = true
+                        mapMarkers.add(it)
+                        if (supporter.markedPoints.size > 1) {
+                            handleMarkers()
+                        }
+                    }
+                }
+            } else binding.redoFab.startAnimation(AnimationUtils.loadAnimation(this,R.anim.shake))
         }
 
     }
@@ -202,10 +265,16 @@ class MainActivity : AppCompatActivity() {
             this@MainActivity
         )
 
-        if (supporter.markedPoints.size > 1)
+        if (supporter.markedPoints.size > 1) {
             binding.distanceFab.show()
-        if (supporter.markedPoints.size > 2)
+            binding.clearFab.show()
+        }
+        if (supporter.markedPoints.size > 2) {
             binding.areaFab.show()
+            binding.clearFab.show()
+            binding.undoFab.show()
+            binding.redoFab.show()
+        }
         when (supporter.polyMode) {
             GON -> {
                 polyGon?.remove()
@@ -216,6 +285,7 @@ class MainActivity : AppCompatActivity() {
                     gMap?.addPolygon {
                         addAll(supporter.markedPoints)
                         strokeColor(primaryColor)
+                        strokeWidth(5f)
                         fillColor(getColor(R.color.seed_green_faded))
                     }?.let { polyGon = it }
                 }
