@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Looper
+import android.util.Log
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -22,6 +23,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.Polygon
 import com.google.android.gms.maps.model.Polyline
@@ -40,6 +42,7 @@ import com.spectra.demo.maps.saver.model.toPolyData
 import com.spectra.demo.maps.saver.model.utils.resToPx
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import org.koin.android.scope.newScope
 import java.io.File
 
 class OpenerActivity : AppCompatActivity() {
@@ -106,13 +109,13 @@ class OpenerActivity : AppCompatActivity() {
 
         if (intent != null && Intent.ACTION_VIEW == intent.action && intent.data != null) {
             val fileUri = intent.data
-            fileUri?.let { handleFileOpening(it) }
 
             lifecycleScope.launch {
                 repeatOnLifecycle(Lifecycle.State.CREATED) {
                     mapFragment.awaitMap().let { map ->
                         gMap = map
                         startLocationUpdates()
+                        fileUri?.let { handleFileOpening(it) }
                     }
                 }
                 repeatOnLifecycle(Lifecycle.State.RESUMED) {
@@ -143,6 +146,7 @@ class OpenerActivity : AppCompatActivity() {
             }
         }
 
+        setUpCurvedState()
 
     }
 
@@ -150,31 +154,38 @@ class OpenerActivity : AppCompatActivity() {
         val folder = File(filesDir, "shared_geo_json")
         if (folder.exists() || folder.mkdirs()) {
             val file = File(folder, "${System.currentTimeMillis()}.gloc")
-            if(!file.exists() && file.createNewFile())
-            if(fileUri.copyToFile(file,this)){
-                file.readFileText().let {gloc ->
-                    val polyData = gloc.toPolyData()
-                    supporter.polyMode = PolyMode.valueOf(polyData.type)
-                    supporter.markedPoints.clear()
-                    mapMarkers.clear()
-                    polyData.points.forEach {
-                        val pos = LatLng(it.lat,it.lng)
-                        supporter.markedPoints.add(pos)
-                        gMap?.addMarker {
-                            position(pos)
+            if (!file.exists() && file.createNewFile())
+                if (fileUri.copyToFile(file, this)) {
+                    val txt = file.readFileText()
+                    Log.d("Opener", "handleFileOpening: file text = $txt")
+                    txt.let { gloc ->
+                        val polyData = gloc.toPolyData()
+                        supporter.polyMode = PolyMode.valueOf(polyData.type)
+                        supporter.markedPoints.clear()
+                        mapMarkers.clear()
+                        val latLngBoundsBuilder = LatLngBounds.builder()
+                        polyData.points.forEach {
+                            val pos = LatLng(it.lat, it.lng)
                             supporter.markedPoints.add(pos)
-                        }?.let {marker ->
-                            mapMarkers.add(marker)
+                            gMap?.addMarker {
+                                latLngBoundsBuilder.include(pos)
+                                position(pos)
+                                supporter.markedPoints.add(pos)
+                            }?.let { marker ->
+                                mapMarkers.add(marker)
+                            }
                         }
+                        gMap?.animateCamera(CameraUpdateFactory.newLatLngBounds(latLngBoundsBuilder.build(),20))
+                        handleMarkers()
                     }
-                    handleMarkers()
                 }
-            }
         }
     }
 
     private var polyLine: Polyline? = null
     private var polyGon: Polygon? = null
+
+
     private fun handleMarkers() {
 
         val primaryColor = supporter.getColor(
@@ -251,7 +262,6 @@ class OpenerActivity : AppCompatActivity() {
             fusedLocationProviderClient.removeLocationUpdates(locationCallback)
         super.onPause()
     }
-
 
 
     private fun setUpCurvedState() {

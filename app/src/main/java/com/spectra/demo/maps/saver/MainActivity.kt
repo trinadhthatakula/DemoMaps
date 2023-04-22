@@ -1,6 +1,7 @@
 package com.spectra.demo.maps.saver
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -19,9 +20,9 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.GoogleMap.OnMarkerDragListener
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.Polygon
 import com.google.android.gms.maps.model.Polyline
@@ -33,8 +34,6 @@ import com.google.maps.android.ktx.mapClickEvents
 import com.spectra.demo.maps.saver.databinding.ActivityMainBinding
 import com.spectra.demo.maps.saver.model.CardPainter
 import com.spectra.demo.maps.saver.model.CustomPainter
-import com.spectra.demo.maps.saver.model.Point
-import com.spectra.demo.maps.saver.model.PolyData
 import com.spectra.demo.maps.saver.model.PolyMode.GON
 import com.spectra.demo.maps.saver.model.PolyMode.LINE
 import com.spectra.demo.maps.saver.model.Supporter
@@ -95,6 +94,7 @@ class MainActivity : AppCompatActivity() {
 
     private val mapMarkers = ArrayList<Marker>()
 
+    @SuppressLint("PotentialBehaviorOverride")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -109,17 +109,38 @@ class MainActivity : AppCompatActivity() {
                     gMap = map
                     //map.setMapStyle(MapStyleOptions.loadRawResourceStyle(this@MainActivity,R.raw.night_maps))
                     startLocationUpdates()
+                    map.setOnMarkerDragListener(
+                        object : OnMarkerDragListener {
+                            override fun onMarkerDrag(p0: Marker) {
+                            }
+                            override fun onMarkerDragEnd(draggedMarker: Marker) {
+                                val tag = draggedMarker.tag
+                                if (tag is Int) {
+                                    mapMarkers[tag] = draggedMarker
+                                    supporter.markedPoints[tag] = draggedMarker.position
+                                    if (supporter.markedPoints.size > 1) {
+                                        handleMarkers()
+                                    }
+                                }
+                            }
+                            override fun onMarkerDragStart(p0: Marker) {
+                            }
+                        })
                     map.mapClickEvents().collect { clickedLatLng ->
                         map.addMarker {
                             position(clickedLatLng)
                             supporter.markedPoints.add(clickedLatLng)
                         }?.let {
+                            it.tag = mapMarkers.size
+                            it.isDraggable = true
                             mapMarkers.add(it)
                             if (supporter.markedPoints.size > 1) {
                                 handleMarkers()
                             }
                         }
+
                     }
+
 
                 }
             }
@@ -163,6 +184,7 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+
 
     override fun onPause() {
         if (gMap != null)
