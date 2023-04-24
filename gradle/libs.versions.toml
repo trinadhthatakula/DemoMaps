@@ -26,6 +26,7 @@ koin-android-compose = "3.4.4"
 koin-annotations = "1.2.0"
 koin-ksp-compiler = "1.2.0"
 geojson-kotlin = "0.3.0"
+lottie = "6.0.0"
 
 [libraries]
 multi-dex = { group = "androidx.multidex", name = "multidex", version.ref = "multi-dex" }
@@ -57,6 +58,7 @@ koin-android-compose = { group = "io.insert-koin", name = "koin-androidx-compose
 koin-annotations = { group = "io.insert-koin", name = "koin-annotations", version.ref = "koin-annotations" }
 koin-ksp-compiler = { group = "io.insert-koin", name = "koin-ksp-compiler", version.ref = "koin-ksp-compiler" }
 geojson-kotlin = { group = "com.github.tyczj", name = "geojson-kotlin", version.ref = "geojson-kotlin"}
+lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie"}
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "com-android-application" }

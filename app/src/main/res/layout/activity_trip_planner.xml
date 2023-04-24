@@ -13,8 +13,10 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
     <FrameLayout
         android:id="@+id/canvas_frame"
@@ -26,43 +28,6 @@
         app:layout_constraintTop_toTopOf="@+id/linearLayout"
         tools:background="?attr/colorPrimary" />
 
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="16dp"
-        app:cardCornerRadius="20dp"
-        style="@style/Widget.Material3.CardView.Elevated"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <LinearLayout
-            android:id="@+id/area_holder"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
-            android:orientation="horizontal">
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/area_tv"
-                android:layout_width="wrap_content"
-                tools:text="Area = 256Sq"
-                tools:visibility="visible"
-                android:visibility="gone"
-                android:textColor="?attr/colorOnPrimary"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="5dp"
-                android:layout_margin="5dp"
-                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-                app:fontFamily="@font/poppins"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:layout_height="wrap_content"/>
-
-        </LinearLayout>
-
-    </com.google.android.material.card.MaterialCardView>
 
 
     <LinearLayout
@@ -115,46 +80,6 @@
         app:layout_constraintStart_toStartOf="@+id/linearLayout"
         app:layout_constraintTop_toTopOf="@+id/linearLayout"
         app:tint="?attr/colorOnSecondary" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guide_half"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.5" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/area_fab"
-        style="@style/Widget.MaterialComponents.FloatingActionButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="4dp"
-        android:contentDescription="@string/save_map_data"
-        android:src="@drawable/vect_gon"
-        app:backgroundTint="?attr/colorPrimary"
-        app:elevation="0dp"
-        app:fabCustomSize="@dimen/avatar_size"
-        app:layout_constraintBottom_toTopOf="@+id/guide_half"
-        app:layout_constraintStart_toStartOf="parent"
-        app:tint="?attr/colorOnPrimary" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/distance_fab"
-        style="@style/Widget.MaterialComponents.FloatingActionButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="4dp"
-        android:contentDescription="@string/save_map_data"
-        android:src="@drawable/vect_line"
-        app:backgroundTint="?attr/colorPrimary"
-        app:elevation="0dp"
-        app:fabCustomSize="@dimen/avatar_size"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/guide_half"
-        app:tint="?attr/colorOnPrimary" />
-
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/undo_fab"

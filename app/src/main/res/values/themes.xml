@@ -3,6 +3,7 @@
     <style name="Base.Theme.DemoMapsSaver" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:fontFamily">@font/poppins</item>
     </style>
 
     <style name="AppThemeGreen" parent="Base.Theme.DemoMapsSaver">
@@ -35,4 +36,12 @@
     </style>
 
     <style name="Theme.DemoMapsSaver" parent="Base.Theme.DemoMapsSaver" />
+
+    <style name="AppThemeGreen.Splash" parent="AppThemeGreen">
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowBackground">@drawable/splash_bg</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+
 </resources>

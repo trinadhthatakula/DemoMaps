@@ -30,7 +30,13 @@
         tools:targetApi="tiramisu">
         <activity
             android:name=".SplashActivity"
-            android:exported="false" />
+            android:theme="@style/AppThemeGreen.Splash"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".OpenerActivity"
             android:exported="true">
@@ -47,10 +53,8 @@
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
                 <data
                     android:host="*"
                     android:mimeType="application/*"
@@ -65,13 +69,10 @@
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:exported="false"/>
+        <activity
+            android:name=".TripPlannerActivity"
+            android:exported="false"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

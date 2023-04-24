@@ -3,4 +3,7 @@
     <string name="save_map_data">Save Map Data</string>
     <string name="zoom_in">Zoom In</string>
     <string name="zoom_out">Zoom Out</string>
+    <string name="splash_logo">splash logo</string>
+    <string name="splash_sub">Find any Mobile Location</string>
+    <string name="loading">Loading</string>
 </resources>

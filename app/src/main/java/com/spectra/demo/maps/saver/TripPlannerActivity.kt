@@ -2,20 +2,21 @@ package com.spectra.demo.maps.saver
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Looper
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.google.android.gms.common.util.MapUtils
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -29,29 +30,26 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.Polygon
 import com.google.android.gms.maps.model.Polyline
-import com.google.maps.android.SphericalUtil
 import com.google.maps.android.ktx.addMarker
-import com.google.maps.android.ktx.addPolygon
-import com.google.maps.android.ktx.addPolyline
 import com.google.maps.android.ktx.awaitMap
 import com.google.maps.android.ktx.mapClickEvents
-import com.spectra.demo.maps.saver.databinding.ActivityMainBinding
+import com.spectra.demo.maps.saver.databinding.ActivityTripPlannerBinding
+import com.spectra.demo.maps.saver.databinding.TripPlannerDialogBinding
 import com.spectra.demo.maps.saver.model.CardPainter
 import com.spectra.demo.maps.saver.model.CustomPainter
-import com.spectra.demo.maps.saver.model.PolyMode.GON
-import com.spectra.demo.maps.saver.model.PolyMode.LINE
 import com.spectra.demo.maps.saver.model.Supporter
+import com.spectra.demo.maps.saver.model.bitmapFromVector
 import com.spectra.demo.maps.saver.model.utils.resToPx
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
-class MainActivity : AppCompatActivity() {
+class TripPlannerActivity : AppCompatActivity() {
 
     private val redoList: ArrayList<LatLng> = ArrayList()
     private val supporter: Supporter by inject()
 
     private val binding by lazy(LazyThreadSafetyMode.NONE) {
-        ActivityMainBinding.inflate(layoutInflater)
+        ActivityTripPlannerBinding.inflate(layoutInflater)
     }
     private val fusedLocationProviderClient by lazy {
         LocationServices.getFusedLocationProviderClient(this)
@@ -66,6 +64,18 @@ class MainActivity : AppCompatActivity() {
             startLocationUpdates()
         }
     }
+    private val markers = listOf(
+        R.drawable.marker_1,
+        R.drawable.marker_2,
+        R.drawable.marker_3,
+        R.drawable.marker_4,
+        R.drawable.marker_5,
+        R.drawable.marker_6,
+        R.drawable.marker_7,
+        R.drawable.marker_8,
+        R.drawable.marker_9,
+        R.drawable.marker_10,
+    )
     private var shouldLocate = true
     private var mapZoom = 15f
     private var gMap: GoogleMap? = null
@@ -110,8 +120,6 @@ class MainActivity : AppCompatActivity() {
 
         binding.undoFab.hide()
         binding.clearFab.hide()
-        binding.areaFab.hide()
-        binding.distanceFab.hide()
         binding.redoFab.hide()
 
         lifecycleScope.launch {
@@ -129,10 +137,7 @@ class MainActivity : AppCompatActivity() {
                                 val tag = draggedMarker.tag
                                 if (tag is Int) {
                                     mapMarkers[tag] = draggedMarker
-                                    supporter.markedPoints[tag] = draggedMarker.position
-                                    if (supporter.markedPoints.size > 1) {
-                                        handleMarkers()
-                                    }
+                                    supporter.tripPoints[tag] = draggedMarker.position
                                 }
                             }
 
@@ -140,16 +145,31 @@ class MainActivity : AppCompatActivity() {
                             }
                         })
                     map.mapClickEvents().collect { clickedLatLng ->
-                        map.addMarker {
-                            position(clickedLatLng)
-                            supporter.markedPoints.add(clickedLatLng)
-                        }?.let {
-                            it.tag = mapMarkers.size
-                            it.isDraggable = true
-                            mapMarkers.add(it)
-                            if (supporter.markedPoints.size > 1) {
-                                handleMarkers()
+                        if (supporter.tripPoints.size < 10) {
+                            map.addMarker {
+                                position(clickedLatLng)
+                                icon(
+                                    bitmapFromVector(
+                                        this@TripPlannerActivity,
+                                        markers[supporter.tripPoints.size]
+                                    )
+                                )
+                                supporter.tripPoints.add(clickedLatLng)
+                            }?.let {
+                                it.tag = mapMarkers.size
+                                it.isDraggable = true
+                                mapMarkers.add(it)
+                                showMarkerDialog()
                             }
+                            binding.undoFab.show()
+                            binding.redoFab.show()
+                            binding.clearFab.show()
+                        } else {
+                            Toast.makeText(
+                                this@TripPlannerActivity,
+                                "a maximum of 10 marker are allowed",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
 
                     }
@@ -175,19 +195,6 @@ class MainActivity : AppCompatActivity() {
             animateMapTo(gMap?.cameraPosition?.target ?: currentLocation)
         }
 
-        binding.areaFab.setOnClickListener {
-            supporter.polyMode = GON
-            binding.areaFab.hide()
-            binding.distanceFab.show()
-            handleMarkers()
-        }
-        binding.distanceFab.setOnClickListener {
-            supporter.polyMode = LINE
-            binding.distanceFab.hide()
-            binding.areaFab.show()
-            handleMarkers()
-        }
-
         binding.saveMap.setOnClickListener {
             gMap?.snapshot {
                 it?.let { mapSnap ->
@@ -200,37 +207,30 @@ class MainActivity : AppCompatActivity() {
         binding.clearFab.setOnClickListener {
             redoList.clear()
             mapMarkers.clear()
-            supporter.markedPoints.clear()
+            supporter.tripPoints.clear()
             polyLine?.remove()
             polyGon?.remove()
             gMap?.clear()
             animateMapTo(currentLocation)
             binding.undoFab.hide()
             binding.clearFab.hide()
-            binding.areaFab.hide()
             binding.redoFab.hide()
-            binding.distanceFab.hide()
         }
 
         binding.undoFab.setOnClickListener {
             mapMarkers.removeLast().remove()
-            val lastLatLng = supporter.markedPoints.removeLast()
+            val lastLatLng = supporter.tripPoints.removeLast()
             redoList.add(lastLatLng)
 
             if (mapMarkers.isEmpty()) {
                 binding.undoFab.hide()
                 binding.redoFab.hide()
                 binding.clearFab.hide()
-                binding.areaFab.hide()
-                binding.distanceFab.hide()
             }
             if (mapMarkers.size == 1) {
-                binding.areaFab.hide()
                 binding.undoFab.hide()
                 binding.redoFab.hide()
             }
-            handleMarkers()
-
             if (redoList.isNotEmpty()) {
                 binding.redoFab.show()
             }
@@ -242,24 +242,37 @@ class MainActivity : AppCompatActivity() {
                 redoList.removeLast().let { lastLatLng ->
                     gMap?.addMarker {
                         position(lastLatLng)
-                        supporter.markedPoints.add(lastLatLng)
+                        supporter.tripPoints.add(lastLatLng)
                     }?.let {
                         it.tag = mapMarkers.size
                         it.isDraggable = true
                         mapMarkers.add(it)
-                        if (supporter.markedPoints.size > 1) {
-                            handleMarkers()
-                        }
                     }
                 }
             } else binding.redoFab.startAnimation(AnimationUtils.loadAnimation(this, R.anim.shake))
         }
 
-        binding.areaFab.setOnLongClickListener {
-            startActivity(Intent(this,TripPlannerActivity::class.java))
-            true
-        }
     }
+
+    private fun showMarkerDialog() {
+        val d = Dialog(this)
+        val tripPlannerDialogBinding = TripPlannerDialogBinding.inflate(layoutInflater)
+        d.setContentView(tripPlannerDialogBinding.root)
+        d.window?.setBackgroundDrawable(ColorDrawable(android.graphics.Color.TRANSPARENT))
+        tripPlannerDialogBinding.apply {
+            ok.setOnClickListener {
+
+            }
+            cancel.setOnClickListener {
+                d.dismiss()
+                supporter.markedPoints.removeLast()
+                mapMarkers.removeLast().remove()
+            }
+        }
+        d.show()
+
+    }
+
 
     override fun onPause() {
         if (gMap != null)
@@ -269,72 +282,6 @@ class MainActivity : AppCompatActivity() {
 
     private var polyLine: Polyline? = null
     private var polyGon: Polygon? = null
-
-    private fun handleMarkers() {
-
-        val primaryColor = supporter.getColor(
-            com.google.android.material.R.attr.colorPrimary,
-            this@MainActivity
-        )
-
-        if (supporter.markedPoints.size > 1) {
-            when (supporter.polyMode) {
-                LINE -> binding.areaFab.show()
-                GON -> binding.distanceFab.show()
-            }
-            binding.clearFab.show()
-        }
-        if (supporter.markedPoints.size > 2) {
-            binding.clearFab.show()
-            binding.undoFab.show()
-            binding.redoFab.show()
-        }
-        when (supporter.polyMode) {
-            GON -> {
-                polyGon?.remove()
-                polyLine?.remove()
-                polyGon = null
-                polyLine = null
-                if (supporter.markedPoints.size > 1) {
-                    gMap?.addPolygon {
-                        addAll(supporter.markedPoints)
-                        strokeColor(primaryColor)
-                        strokeWidth(5f)
-                        fillColor(getColor(R.color.seed_green_faded))
-                    }?.let { polyGon = it }
-                }
-                val area = SphericalUtil.computeArea(supporter.markedPoints)
-                binding.areaTv.apply {
-                    text = "Area: $area Sq mts"
-                    isVisible = true
-                }
-            }
-
-            LINE -> {
-                polyGon?.remove()
-                polyLine?.remove()
-                polyGon = null
-                polyLine = null
-                if (supporter.markedPoints.size > 1) {
-                    gMap?.addPolyline {
-                        addAll(supporter.markedPoints)
-                        color(primaryColor)
-                    }?.let { polyLine = it }
-                }
-                val distance = SphericalUtil.computeLength(supporter.markedPoints)
-                val formattedDistance = when{
-                    distance< 1000 -> "Distance = $distance mtr"
-                    else -> "Distance = ${distance/1000} kms"
-                }
-                binding.areaTv.apply {
-                    text = formattedDistance
-                    isVisible = true
-                }
-            }
-
-        }
-
-    }
 
     private fun startLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(
